@@ -5,6 +5,11 @@ project scaffolding types, mainly for *Adobe Experience Manager*. This repositor
 yield its way to a more sophisticated way of template discovery - namely a `neo-server` that will
 host all the template metadata from around the world. This is just the first step in that direction.
 
-# License
+## Available Templates
+
+* aem62 - Adobe Experience Manager 6.2
+
+
+## License
 
 Apache Public License, Version 2
