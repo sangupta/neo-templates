@@ -155,8 +155,9 @@
         {
             "name" : "siteErrorFolder",
             "prompt" : "What should the folder be called",
-            "type" : "stirng",
-            "value" : "errors"
+            "type" : "string",
+            "value" : "errors",
+            "ifTrue" : "defineErrorPageFolder"
         },
         {
             "name": "enablePagesReferenceProvider",
