@@ -1,0 +1,389 @@
+{
+    "name": "aem-6.2",
+    "version": "1.0.0",
+    "description": "Generate Maven multi-module project for AEM 6.2",
+    "params": [
+        {
+            "name": "groupID",
+            "type": "string",
+            "prompt": "Maven group ID for the generated project",
+            "value": "com.mycompany",
+            "required": false
+        },
+        {
+            "name": "artifactID",
+            "prompt": "Maven artifact ID for the generated reactor project",
+            "value": "newproject"
+        },
+        {
+            "name": "version",
+            "prompt": "Maven version for generated project",
+            "value": "0.0.1-SNAPSHOT"
+        },
+        {
+            "name": "projectName",
+            "prompt": "Project Name",
+            "value": "$artifactID"
+        },
+        {
+            "name": "description",
+            "prompt": "Project description",
+            "value": "$artifactID project"
+        },
+        {
+            "name": "newNamingConvention",
+            "type": "boolean",
+            "prompt": "Use new module naming conventions (core, ui.apps vs. bundle, content)",
+            "value": "yes"
+        },
+        {
+            "name": "bundleArtifactID",
+            "prompt": "Maven artifact ID for the generated bundle project",
+            "value": "${artifactID}-core"
+        },
+        {
+            "name": "contentArtifactID",
+            "prompt": "Maven artifact ID for the generated content package project",
+            "value": "${artifactID}-ui-apps"
+        },
+        {
+            "name": "packageGroup",
+            "prompt": "Group name for Content Package",
+            "value": "${artifactID}-content"
+        },
+        {
+            "name": "appsFolder",
+            "prompt": "Folder name under /apps for components and templates",
+            "value": "$artifactID"
+        },
+        {
+            "name": "contentFolder",
+            "prompt": "Folder name under /content for components and templates",
+            "value": "$artifactID"
+        },
+        {
+            "name": "createDesign",
+            "prompt": "Create a site design (under /etc/designs)",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name" : "designFolder",
+            "prompt" : "Folder name under /etc/designs which will contain your design settings",
+            "value" : "$artifactID",
+            "ifTrue" : "createDesign"
+        },
+        {
+            "name": "createMainClientLib",
+            "prompt": "Create 'main' client library (at /etc/clientlibs/$appsFolder/main)",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "createDependenciesClientLib",
+            "prompt": "Create 'dependencies' client library (at /etc/clientlibs/$appsFolder/dependencies having the category ${appsFolder}.dependencies)",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "enableCodeQuality",
+            "prompt": "Include ACS standard code quality settings (PMD, Findbugs, Checkstyle, JSLint, jacoco)",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "createEnvRunModeConfigFolders",
+            "prompt": "Create run-mode config directories for each environment",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "envNames",
+            "prompt": "What are the environment names (comma-delimited list)",
+            "type": "list",
+            "value": "localdev,dev,qa,stage,prod"
+        },
+        {
+            "name": "createAuthorAndPublishPerEnv",
+            "prompt": "Create author and publish runmode directories per environment",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "reconfigureRootMapping",
+            "prompt": "Set the default root mapping to /welcome (Classic UI)",
+            "type": "boolean",
+            "value": "no"
+        },
+        {
+            "name": "enableClassicAuthoringAsDefault",
+            "prompt": "Set the default authoring UI to Classic UI",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "includeAcsAemCommons",
+            "prompt": "Include ACS AEM Commons as a dependency",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "includeAcsAemCommonsSubPackage",
+            "prompt": "Include ACS AEM Commons as a sub-package",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "enableAcsCommonsErrorHandler",
+            "prompt": "Enable the ACS AEM Commons Error Handler",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "enablePagesReferenceProvider",
+            "prompt": "Enable the ACS AEM Commons Pages Reference Provider",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "enableDesignReferenceProvider",
+            "prompt": "Enable the ACS AEM Commons Design Reference Provider",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "enableDHLM",
+            "prompt": "Enable the ACS AEM Commons Design Html Library Manager",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "enableVersionedClientLibs",
+            "prompt": "Enable the ACS AEM Commons Versioned Clientlib Rewriter",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "usingSlingModels",
+            "prompt": "Will you be using Sling Models",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "slingModelsPackage",
+            "prompt": "Package that will contain your Sling Models",
+            "value": "${groupID}.${artifactID}.sling.models",
+            "ifTrue": "usingSlingModels"
+        },
+        {
+            "name": "purgeDamWorkflows",
+            "prompt": "Automatic purging of the DAM workflows",
+            "type": "boolean",
+            "value": "yes"
+        },
+        {
+            "name": "purgeDamWorkflowRetention",
+            "prompt": "How many days should the DAM workflows be retained",
+            "type": "integer",
+            "value": "7"
+        }
+    ],
+    
+    "process" : [
+        {
+            "message" : "Setting up base properties ...",
+            "commands" : [
+                "#if($newNamingConvention) #addProperty ('coreFolder', 'core') #addProperty ('uiFolder', 'ui.apps') #else #addProperty ('coreFolder', 'bundle') #addProperty ('uiFolder', 'content') #end",
+                "#addProperty ('jcrRoot', \"${uiFolder}/src/main/content/jcr_root\")"
+            ]
+        },
+        {
+            "message" : "Creating basic application folders ...",
+            "commands" : [
+                "#mkdir (\"${coreFolder}\")",
+                "#mkdir (\"${coreFolder}/src/main/java\")",
+                "#mkdir (\"${coreFolder}/test/main/java\")",
+                "#copyTemplate (\"projects/core/pom.xml\", \"${coreFolder}/pom.xml\")",
+                "#copyTemplateDir (\"projects/ui.apps\", \"${uiFolder}\")",
+                
+                "#mkdir (\"${jcrRoot}/apps/$appsFolder\")",
+                "#mkdir (\"${jcrRoot}/apps/$appsFolder/components\")",
+                "#mkdir (\"${jcrRoot}/apps/$appsFolder/components/content\")",
+                "#mkdir (\"${jcrRoot}/apps/$appsFolder/components/page\")",
+                "#mkdir (\"${jcrRoot}/apps/$appsFolder/templates\")",
+                
+                "#mkdir (\"${jcrRoot}/apps/$appsFolder/install\")",
+                "#writeFile (\"${jcrRoot}/apps/$appsFolder/install/.vltignore\", \"*.jar\")"
+            ]
+        },
+        {
+            "message" : "Creating run modes ...",
+            "commands" : [
+                "#mkdir (\"${jcrRoot}/apps/$appsFolder/run-modes\")",
+                "#mkdir (\"${jcrRoot}/apps/$appsFolder/run-modes/config\")",
+                
+                "#addProperty ('projectConfigDir', \"${jcrRoot}/apps/$appsFolder/run-modes/config\")",
+                
+                "#copyDir (\"config\", \"${projectConfigDir}\")",
+                "#copyDir (\"config.author\", \"${jcrRoot}/apps/$appsFolder/run-modes/config.author\")",
+                "#copyDir (\"config.publish\", \"${jcrRoot}/apps/$appsFolder/run-modes/config.publish\")"
+            ]
+        },
+        {
+            "message" : "Creating environment-specific run modes ...",
+            "condition" : "$createEnvRunModeConfigFolders",
+            "commands" : [
+                "#foreach ($config in $envNames) #mkdir (\"${jcrRoot}/apps/$appsFolder/run-modes/config.$config\") #end"
+            ]
+        },
+        {
+            "message" : "Creating author/publish environment-specific run modes",
+            "condition" : "$createEnvRunModeConfigFolders && $createAuthorAndPublishPerEnv",
+            "commands" : [
+                "#foreach ($config in $envNames) #mkdir (\"${jcrRoot}/apps/$appsFolder/run-modes/config.author.$config\") #end",
+                "#foreach ($config in $envNames) #mkdir (\"${jcrRoot}/apps/$appsFolder/run-modes/config.publish.$config\") #end"
+            ]
+        },
+        {
+            "message" : "Creating design folders ...",
+            "condition" : "$createDesign",
+            "commands" : [
+                "#mkdir (\"${jcrRoot}/etc/designs/$designFolder\")"
+            ]
+        },
+        {
+            "condition" : "$createDesign && $enableDHLM",
+            "commands" : [
+                "#addProperty ('dhlmHeadCss', '')",
+                "#addProperty ('dhlmHeadJs', '')",
+                "#addProperty ('dhlmBodyJs', '')"
+            ]
+        },
+        {
+            "condition" : "$createDesign && $enableDHLM && $createMainClientLib",
+            "commands" : [
+                "#addProperty ('dhlmHeadCss', \"${appsFolder}.main\")",
+                "#addProperty ('dhlmBodyJs', \"${appsFolder}.main\")"
+            ]
+        },
+        {
+            "condition" : "$createDesign && $enableDHLM && $createDependenciesClientLib",
+            "commands" : [
+                "#addProperty ('dhlmHeadJs', \"${appsFolder}.dependencies\")"
+            ]
+        },
+        {
+            "message" : "Configuring Design HTML Library Manager ...",
+            "condition" : "$createDesign && $enableDHLM",
+            "commands" : [
+                "#copyTemplate (\"design/.content-dhlm.xml\", \"${jcrRoot}/etc/designs/$designFolder/.content.xml\")"
+            ]
+        },
+        {
+            "message" : "Configuring Design HTML Library Manager ...",
+            "condition" : "$createDesign && !($enableDHLM)",
+            "commands" : [
+                "#copyTemplate (\"design/.content-no-dhlm.xml\", \"${jcrRoot}/etc/designs/$designFolder/.content.xml\")"
+            ]
+        },
+        {
+            "message" : "Creating client libraries ...",
+            "condition" : "$createMainClientLib",
+            "commands" : [
+                "#addProperty ('projectAppsFolder', \"${jcrRoot}/etc/clientlibs/${appsFolder}\")",
+                "#mkdir (\"${projectAppsFolder}\")",
+                "#mkdir (\"${projectAppsFolder}/main\")",
+                "#mkdir (\"${projectAppsFolder}/main/css\")",
+                "#mkdir (\"${projectAppsFolder}/main/js\")",
+                "#copyTemplate (\"clientlibs/.content.xml\", \"${projectAppsFolder}/main/.content.xml\")",
+                "#copyTemplate (\"clientlibs/readme.txt\", \"${projectAppsFolder}/main/readme.txt\")",
+                "#copyFile (\"clientlibs/css.txt\", \"${projectAppsFolder}/main/css/css.txt\")",
+                "#copyFile (\"clientlibs/js.txt\", \"${projectAppsFolder}/main/js/js.txt\")"
+            ]
+        },
+        {
+            "message" : "Creating dependencies client libraries ...",
+            "condition" : "$createDependenciesClientLib",
+            "commands" : [
+                "#addProperty ('projectAppsFolder', \"${jcrRoot}/etc/clientlibs/${appsFolder}\")",
+                "#mkdir (\"${projectAppsFolder}\")",
+                "#mkdir (\"${projectAppsFolder}/dependencies\")",
+                "#copyTemplate (\"clientlibs/deps/.content.xml\", \"${projectAppsFolder}/dependencies/.content.xml\")",
+                "#copyTemplate (\"clientlibs/deps/readme.txt\", \"${projectAppsFolder}/dependencies/readme.txt\")",
+                "#copyTemplate (\"clientlibs/deps/css.txt\", \"${projectAppsFolder}/dependencies/css.txt\")",
+                "#copyTemplate (\"clientlibs/deps/js.txt\", \"${projectAppsFolder}/dependencies/js.txt\")"
+            ]
+        },
+        {
+            "message" : "Enable error handler ...",
+            "condition" : "$enableErrorHandler",
+            "commands" : [
+                "#addProperty ('projectErrorFolder', \"${jcrRoot}/apps/sling/servlet/errorhandler\")",
+                "#mkdir (\"${projectErrorFolder}\")",
+                "#copyFile (\"error/404.jsp\", \"${projectErrorFolder}/404.jsp\")",
+                "#copyFile (\"error/default.jsp\", \"${projectErrorFolder}/default.jsp\")"
+            ]
+        },
+        {
+            "message" : "Enable error handler ...",
+            "condition" : "$enableErrorHandler && $errorSitePath && $errorFolder",
+            "commands" : [
+                "#copyTemplate (\"error/handler.xml\", \"${projectConfigDir}/com.adobe.acs.commons.errorpagehandler.impl.ErrorPageHandlerImpl.xml\")"
+            ]
+        },
+        {
+            "message" : "Enable DHLM ...",
+            "condition" : "$enableDHLM",
+            "commands" : [
+                "#copyTemplate (\"dhlm/content.xml\", \"${projectConfigDir}.author/com.adobe.acs.commons.util.impl.DelegatingServletFactoryImpl-DesignerClientLibsManager.xml\")"
+            ]
+        },
+        {
+            "message" : "Enabling Pages Reference Provider ...",
+            "condition" : "$enablePagesReferenceProvider",
+            "commands" : [
+                "#copyTemplate (\"empty-config.xml\", \"${projectConfigDir}/com.adobe.acs.commons.wcm.impl.PagesReferenceProvider.xml\")"
+            ]
+        },
+        {
+            "message" : "Enabling Design Reference Provider ...",
+            "condition" : "$enableDesignReferenceProvider",
+            "commands" : [
+                "#copyTemplate (\"empty-config.xml\", \"${projectConfigDir}/com.adobe.acs.commons.wcm.impl.DesignReferenceProvider.xml\")"
+            ]
+        },
+        {
+            "message" : "Enabling Versioned Client Library Rewriter Rule...",
+            "condition" : "$enableVersionedClientLibs",
+            "commands" : [
+                "#copyTemplate (\"empty-config.xml\", \"${projectConfigDir}/com.adobe.acs.commons.wcm.impl.DesignReferenceProvider.xml\")",
+                "#mkdir (\"${projectConfigDir}/rewriter\")",
+                "#copyTemplate (\"rewriter/.content.xml\", \"${projectConfigDir}/rewriter/.content.xml\")",
+                "#mkdir (\"${projectConfigDir}/rewriter/default\")",
+                "#copyTemplate (\"rewriter/default/.content.xml\", \"${projectConfigDir}/rewriter/default/.content.xml\")"
+            ]
+        },
+        {
+            "message" : "Enabling Root Mapping ...",
+            "condition" : "$reconfigureRootMapping",
+            "commands" : [
+                "#copyTemplate (\"config/com.day.cq.commons.servlets.RootMappingServlet.xml\", \"${projectConfigDir}/com.day.cq.commons.servlets.RootMappingServlet.xml\")"
+            ]
+        },
+        {
+            "message" : "Enabling Classic UI Authoring ...",
+            "condition" : "$enableClassicAuthoringAsDefault",
+            "commands" : [
+                "#copyTemplate (\"config/com.day.cq.wcm.core.impl.AuthoringUIModeServiceImpl.xml\", \"${projectConfigDir}/com.day.cq.wcm.core.impl.AuthoringUIModeServiceImpl.xml\")"
+            ]
+        },
+        {
+            "message" : "Enabling DAM Workflow Purging ...",
+            "condition" : "$purgeDamWorkflows",
+            "commands" : [
+                "#copyTemplate (\"config/com.adobe.granite.workflow.purge.Scheduler-dam.xml\", \"${projectConfigDir}/com.adobe.granite.workflow.purge.Scheduler-dam.xml\")"
+            ]
+        }
+    ]
+    
+}
