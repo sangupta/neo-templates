@@ -101,7 +101,8 @@
             "name": "envNames",
             "prompt": "What are the environment names (comma-delimited list)",
             "type": "list",
-            "value": "localdev,dev,qa,stage,prod"
+            "value": "localdev,dev,qa,stage,prod",
+            "ifTrue" : "createEnvRunModeConfigFolders"
         },
         {
             "name": "createAuthorAndPublishPerEnv",
@@ -140,6 +141,24 @@
             "value": "yes"
         },
         {
+            "name" : "defaultErrorsPath",
+            "prompt" : "path to your default error page",
+            "type" : "string",
+            "value" : "/content/${contentFolder}/errors/404"
+        },
+        {
+            "name" : "defineErrorPageFolder",
+            "prompt" : "Do you want a specific error page folder for /content/${contentFolder}",
+            "type" : "boolean",
+            "value" : "false"
+        },
+        {
+            "name" : "siteErrorFolder",
+            "prompt" : "What should the folder be called",
+            "type" : "stirng",
+            "value" : "errors"
+        },
+        {
             "name": "enablePagesReferenceProvider",
             "prompt": "Enable the ACS AEM Commons Pages Reference Provider",
             "type": "boolean",
@@ -155,7 +174,8 @@
             "name": "enableDHLM",
             "prompt": "Enable the ACS AEM Commons Design Html Library Manager",
             "type": "boolean",
-            "value": "yes"
+            "value": "yes",
+            "ifTrue" : "$createDesign && ( $createMainClientLib || $createDependenciesClientLib)"
         },
         {
             "name": "enableVersionedClientLibs",
@@ -185,7 +205,8 @@
             "name": "purgeDamWorkflowRetention",
             "prompt": "How many days should the DAM workflows be retained",
             "type": "integer",
-            "value": "7"
+            "value": "7",
+            "ifTrue" : "purgeDamWorkflows"
         }
     ],
     
@@ -316,7 +337,7 @@
         },
         {
             "message" : "Enable error handler ...",
-            "condition" : "$enableErrorHandler",
+            "condition" : "$enableAcsCommonsErrorHandler",
             "commands" : [
                 "#addProperty ('projectErrorFolder', \"${jcrRoot}/apps/sling/servlet/errorhandler\")",
                 "#mkdir (\"${projectErrorFolder}\")",
@@ -326,7 +347,7 @@
         },
         {
             "message" : "Enable error handler ...",
-            "condition" : "$enableErrorHandler && $errorSitePath && $errorFolder",
+            "condition" : "$enableAcsCommonsErrorHandler && $errorSitePath && $errorFolder",
             "commands" : [
                 "#copyTemplate (\"error/handler.xml\", \"${projectConfigDir}/com.adobe.acs.commons.errorpagehandler.impl.ErrorPageHandlerImpl.xml\")"
             ]
