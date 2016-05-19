@@ -7,7 +7,9 @@ host all the template metadata from around the world. This is just the first ste
 
 ## Available Templates
 
-* aem62 - Adobe Experience Manager 6.2
+* aem-6.2 - Adobe Experience Manager 6.2
+* aem-6.1 - Adobe Experience Manager 6.1
+* aem-6.0 - Adobe Experience Manager 6.0
 
 
 ## License
