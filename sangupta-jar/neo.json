@@ -1,0 +1,89 @@
+{
+    "name": "sangupta-jar",
+    "version": "1.0.0",
+    "description": "Generate a JAR project",
+	"updateUrl" : "http://localhost:8080/sangupta-jar",
+	"authors" : [
+		{
+			"id" : "sangupta",
+			"name" : "Sandeep Gupta",
+			"url" : "http://sangupta.com"
+		}
+	],
+    "params": [
+        {
+            "name": "groupID",
+            "prompt": "Maven group ID for the generated project",
+            "value": "com.sangupta"
+        },
+        {
+            "name": "artifactID",
+            "prompt": "Maven artifact ID for the generated reactor project",
+            "value": "newproject"
+        },
+        {
+            "name": "version",
+            "prompt": "Maven version for generated project",
+            "value": "0.0.1-SNAPSHOT"
+        },
+        {
+            "name": "projectName",
+            "prompt": "Project Name",
+            "value": "$artifactID"
+        },
+        {
+            "name": "description",
+            "prompt": "Project description",
+            "value": "$artifactID project"
+        },
+        {
+            "name": "github",
+            "type": "boolean",
+            "prompt": "Use github integration",
+            "value": "yes"
+        },
+        {
+            "name": "travisci",
+            "type": "boolean",
+            "prompt": "Use travis-ci integration",
+            "value": "yes"
+        },
+        {
+            "name": "coveralls",
+			"type": "boolean",
+            "prompt": "Include coveralls based code-coverage",
+            "value": "yes",
+			"ifTrue" : "travisci"
+        },
+        {
+            "name": "license",
+			"type": "boolean",
+            "prompt": "Include Apache License",
+            "value": "yes"
+        },
+        {
+            "name": "gitignore",
+            "prompt": "Include .gitignore",
+			"type": "boolean",
+            "value": "yes"
+        },
+		{
+			"name" : "sonatype",
+			"type" : "boolean",
+			"prompt" : "Inherit Sonatype Open-Source",
+			"value" : "yes"
+		}
+    ],
+    
+    "process" : [
+        {
+            "message" : "Setting up base project...",
+            "commands" : [
+                "#addProperty ('source', \"src/main/java/com/sangupta\")",
+				"#addProperty ('resources', \"src/main/resources\")",
+				"#addProperty ('test', \"src/test/java/com/sangupta\")"
+            ]
+        }
+    ]
+    
+}
