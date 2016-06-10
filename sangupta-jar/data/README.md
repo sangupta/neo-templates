@@ -14,12 +14,13 @@
 
 $description
 
-## TODO
+#set($doubleHash = '##')
+$doubleHash TODO
 
-## Usage
+$doubleHash Usage
 
 #if($license)
-## License
+$doubleHash License
 
 ```
  ${projectName}: ${description}

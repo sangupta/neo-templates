@@ -72,6 +72,12 @@
 			"type" : "boolean",
 			"prompt" : "Inherit Sonatype Open-Source",
 			"value" : "yes"
+		},
+		{
+			"name" : "badges",
+			"type" : "boolean",
+			"prompt" : "Add README.md badges",
+			"value" : "yes"
 		}
     ],
     
